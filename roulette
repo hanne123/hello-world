@@ -1,0 +1,197 @@
+// inkluderar ctime för att kunna generera random nummer för roulettespelet
+// stdlib.h inlkuderas för att kunna använda "system("cls")" i slutet så fönstreat clearas upp för att man lättare ska se att de är en ny omgång
+
+#include "stdafx.h"
+#include <stdlib.h>
+#include <ctime>; 
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+
+	// här deklareras de mesta i programmet, först startpengar som "mone", sedan summan som satsas som "bet", sedan kommer "whileswitch" 1 & 2 som används för att bestämma när man ska stanna kvar eller gå vidare från två olika while-loopar
+	// sedan kommer "rnummer" som är kort för roulettenummer, "numbercolor" som väljer om man vill satsa på ett nummer eller färg och till sist "wnumber" & "wcolor" som är "winning-nummer" som randomizas längre ner i programmet.
+	int mone = 1000, bet, whileswitch1 = 1, whileswitch2 = 1, whileswitch3 = 1, whileswitch4 = 1, rnummer, numbercolor, wnumber, wcolor;
+	string rcolor, playagain;
+
+	cout << "============================================================" <<endl << " NOTE THAT THIS IS AN EARLY ALPHA-VERSION OF THE GAME" << endl << " PLEASE DO NOT ENTER CHARACTERS WHEN PROMPTED TO INPUT NUMBERS OR THE OTHER WAY" << endl << " This will be fixed in later patch when we have the workers and money." << endl;
+
+	// while loop för att starta om spelet om man vill köra igen efter man vunnit / förlorat
+	while (whileswitch3 == 1) {
+
+		// sätter alla whileswitch till 1 igen för att while-looparna ska fungera
+		whileswitch1 = 1;
+		whileswitch2 = 1;
+		whileswitch3 = 1;
+		whileswitch4 = 1;
+
+		// while loop för att man ska kunna skriva om hur mycket man vill betta om man skriver ett antal som inte är 100, 300 eller 500
+		while (whileswitch1 == 1){
+
+			cout << endl << "============================================================" << endl << "Welcome to roulette!" << endl << "You have " << mone << ":- to play with..." << endl << endl << "How much do you want to bet?" << endl << "(100, 300 or 500:-): ";
+			cin >> bet;
+
+			// switch struktur för att ge feedback om hur mycket man bettat samt drar det från äns pengasumma "mone".
+			switch (bet) {
+			case 100:
+				cout << endl << "You bet 100:-" << endl;
+				mone = mone - bet;
+				whileswitch1++;
+				break;
+			case 300:
+				cout << endl << "You bet 300:-" << endl;
+				mone = mone - bet;
+				whileswitch1++;
+				break;
+			case 500:
+				cout << endl << "You bet 500:-" << endl;
+				mone = mone - bet;
+				whileswitch1++;
+				break;
+			default:
+				cout << "Invalid ammount of mone, try again..." << endl;
+			}
+		}
+
+
+		// while-loop för att välja om man ska betta på ett nummer eller en färg
+		while (whileswitch4 == 1){
+			cout << endl << "Do you want to bet on a number or a color? (1=number & 2=color)" << endl << "(1 / 2): ";
+			cin >> numbercolor;
+			whileswitch2 = 1;
+
+			// while-loop för att välja vilket nummer eller vilken färg
+			while (whileswitch2 == 1){
+
+				// en switch med cases beroende på om man valde nummer eller färg
+				switch (numbercolor){
+				case 1:
+					cout << endl << "Choose a number between 1 & 36 you wish to place your bet on: " << endl << "(1-36): ";
+					cin >> rnummer;
+
+					// if-sats för att kolla om spelaren angivit ett nummer som finns att betta på (1 - 36), om inte får man välja nummer igen
+					if ((rnummer <= 36) && (rnummer >= 1)){
+						cout << "You chose number: " << rnummer << endl;
+						numbercolor = 1;
+						whileswitch2++;
+					}
+					else{
+						cout << "Invalid number, try again." << endl;
+					}
+					whileswitch4++;
+					break;
+				case 2:
+					cout << endl << "Choose red or black:" << endl << "(r / b): ";
+					cin >> rcolor;
+
+					// if-sats för att kolla om spelaren skrivit i rätt bokstav (y/n) annars får man skriva igen, samt att den ger feedback om vilken färg man valt
+					if (rcolor == "r"){
+						cout << endl << "You chose red." << endl;
+						numbercolor = 2;
+						whileswitch2++;
+					}
+					else if (rcolor == "b"){
+						cout << endl << "You chose black." << endl;
+						numbercolor = 2;
+						whileswitch2++;
+					}
+					else{
+						cout << "Invalid input, try again." << endl;
+					}
+					whileswitch4++;
+					break;
+				default:
+					cout << "Invalid option, try again: " << endl;
+					numbercolor = 0;
+					whileswitch2++;
+					break;
+				}
+			}
+		}
+		// en kort if sats som gör om strängen "rcolor" till nummer 1 eller 2 så det kan räknas ut om det vinner eftersom det genereras ett nummer för att se vad som vinner
+		int colortonumber;
+		if (numbercolor == 2){
+			if (rcolor == "r")
+				colortonumber = 1;
+			else if (rcolor == "b")
+				colortonumber = 2;
+			else
+				cout << "COLOR TO NUMBER IF -ERROR";
+		}
+
+		/* 
+		här genereras två random tal beroende på tiden i datorn när koden i programmet körs
+		ett tal som är vilket nummer som vann, det andra är vilken färg som vunnit
+		*/
+		srand(time(0));
+		wnumber = rand() % 36 + 1;
+		wcolor = rand() % 2 + 1;
+
+
+		// WINNING ON NUMBER || MONEY * 10
+		// if-sats för att se om man vinner eller inte om man valt att satsa på ett nummer
+		if (numbercolor == 1){
+			if (rnummer == wnumber){
+				bet = bet * 10;
+				cout << "! ! !WINNER! ! !" << endl << "You won: " << bet << ":-" << endl;
+				mone = mone + bet;
+				cout << "You now have:" << mone << ":- to play with." << endl;
+			}
+			else{
+				cout << "LOSER, sorry, you didn't win..." << endl << "the winning number was: " << wnumber << endl;
+			}
+		}
+		// WINNING ON COLOR || MONEY * 2
+		// if-sats för att se om man vinner eller inte om man valt att satsa på en färg
+		else if (numbercolor == 2){
+			if (colortonumber == wcolor){
+				bet = bet * 2;
+				cout << "! ! !WINNER! ! !" << endl << "You won: " << bet << ":-" << endl;
+				mone = mone + bet;
+			}
+			else{
+				cout << "LOSER, sorry, you didn't win..." << endl;
+			}
+		}
+		else
+			cout << "ANNOUNCING WIN OR LOSE IF -ERROR";
+
+		// if-sats för att se om man har pengar för att spela igen, om man har får man frågan om man vill spela igen: y/n
+		if (mone > 100){
+			cout << endl << "Do you want to play again?" << endl << "(y / n): ";
+
+			while (true){
+				cin >> playagain;
+				if (playagain == "y"){
+					cout << "starting a new game... " << endl;
+					break;
+				}
+				else if (playagain == "n"){
+					cout << "Thank you for playing, you now have: " << mone << ":- please come again" << endl;
+					whileswitch3++;
+				}
+				else
+					cout << "(y / n): ";
+			}
+		}
+		else if (mone < 100){
+			cout << endl << "GAME OVER" << endl << "You don't have enough money to play again..." << endl;
+			whileswitch3++;
+			cin.get();
+			cin.ignore();
+
+		}
+		else
+			cout << "ERROR KOLLA PENGAR" << endl;
+
+		// här clearas skärmen för att förbereda för en ny omgång
+		system("cls");
+
+	// WHILESWITCH 3 ENDS>>
+	}
+
+	return 0;
+}
+
